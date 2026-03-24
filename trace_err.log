@@ -1,0 +1,24 @@
+Traceback (most recent call last):
+  File "C:\Users\Administrator\Music\panchratna\backend\trace_logger.py", line 11, in <module>
+    call_command('makemigrations')
+  File "C:\Users\Administrator\Music\panchratna\backend\venv\Lib\site-packages\django\core\management\__init__.py", line 118, in call_command
+    command = load_command_class(app_name, command_name)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\Music\panchratna\backend\venv\Lib\site-packages\django\core\management\__init__.py", line 48, in load_command_class
+    module = import_module("%s.management.commands.%s" % (app_name, name))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "C:\Users\Administrator\Music\panchratna\backend\venv\Lib\site-packages\django\core\management\commands\makemigrations.py", line 11, in <module>
+    from django.db.migrations import Migration
+  File "C:\Users\Administrator\Music\panchratna\backend\venv\Lib\site-packages\django\db\migrations\__init__.py", line 1, in <module>
+    from .migration import Migration, swappable_dependency  # NOQA
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'django.db.migrations.migration'
