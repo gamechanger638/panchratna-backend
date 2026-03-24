@@ -1,4 +1,6 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
 from .serializers import CustomTokenObtainPairSerializer
 
 from rest_framework import viewsets, permissions
@@ -17,3 +19,8 @@ class UserManagementViewSet(viewsets.ModelViewSet):
         if self.request.user.role == 'super_admin':
             return User.objects.all()
         return User.objects.filter(community=self.request.user.community)
+
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = UserManagementSerializer
