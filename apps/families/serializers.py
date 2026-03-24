@@ -37,14 +37,20 @@ class FamilySerializer(serializers.ModelSerializer):
         ward = data.get('ward')
         vidhansabha = data.get('vidhansabha')
         district = data.get('district')
+        loksabha = data.get('loksabha')
+        sambhag = data.get('sambhag')
         state = data.get('state')
 
         if ward and vidhansabha and ward.parent != vidhansabha:
             raise serializers.ValidationError({"ward": "Ward must belong to the selected Vidhansabha."})
         if vidhansabha and district and vidhansabha.parent != district:
             raise serializers.ValidationError({"vidhansabha": "Vidhansabha must belong to the selected District."})
-        if district and state and district.parent != state:
-            raise serializers.ValidationError({"district": "District must belong to the selected State."})
+        if district and loksabha and district.parent != loksabha:
+            raise serializers.ValidationError({"district": "District must belong to the selected Loksabha."})
+        if loksabha and sambhag and loksabha.parent != sambhag:
+            raise serializers.ValidationError({"loksabha": "Loksabha must belong to the selected Sambhag."})
+        if sambhag and state and sambhag.parent != state:
+            raise serializers.ValidationError({"sambhag": "Sambhag must belong to the selected State."})
             
         return data
 

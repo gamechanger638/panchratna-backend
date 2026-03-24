@@ -18,9 +18,60 @@ class UserManagementViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated] # To be refined further if needed
 
     def get_queryset(self):
-        if self.request.user.role == 'super_admin':
+        user = self.request.user
+        if user.role == 'super_admin':
             return User.objects.all()
-        return User.objects.filter(community=self.request.user.community)
+        
+        queryset = User.objects.filter(community=user.community)
+        
+        if user.location:
+            descendant_ids = user.location.get_all_descendant_ids(include_self=True)
+            queryset = queryset.filter(location_id__in=descendant_ids)
+            
+        return queryset
+
+    def perform_create(self, serializer):
+        self.validate_access(serializer.validated_data)
+        serializer.save()
+
+    def perform_update(self, serializer):
+        self.validate_access(serializer.validated_data)
+        serializer.save()
+
+    def validate_access(self, data):
+        requester = self.request.user
+        if requester.role == 'super_admin':
+            return
+
+        target_role = data.get('role')
+        target_location = data.get('location')
+
+        # Define role hierarchy
+        role_priority = {
+            'super_admin': 100,
+            'state_admin': 80,
+            'district_admin': 60,
+            'zone_admin': 40,
+            'vidhansabha_admin': 20,
+            'ward_volunteer': 0
+        }
+
+        # 1. Check Role: Cannot create equal or higher role
+        if role_priority.get(target_role, 0) >= role_priority.get(requester.role, 0):
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied("You cannot create/update a user with a role equal to or higher than yours.")
+
+        # 2. Check Geographic Scope: Must be within descendants
+        if requester.location and target_location:
+            descendant_ids = requester.location.get_all_descendant_ids(include_self=True)
+            if target_location.id not in descendant_ids:
+                from rest_framework.exceptions import PermissionDenied
+                raise PermissionDenied("You cannot create/update a user outside your geographic jurisdiction.")
+
+        # 3. Community must match
+        if requester.community and data.get('community') != requester.community:
+             from rest_framework.exceptions import PermissionDenied
+             raise PermissionDenied("User must belong to the same community.")
 
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
