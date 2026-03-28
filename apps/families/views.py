@@ -8,8 +8,8 @@ from rest_framework.response import Response
 class FamilyViewSet(viewsets.ModelViewSet):
     permission_classes = [RoleBasedFamilyPermission]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
-    filterset_fields = ['state', 'district', 'vidhansabha', 'ward']
-    search_fields = ['name', 'mobile']
+    filterset_fields = ['state', 'sambhag', 'loksabha', 'district', 'vidhansabha', 'ward', 'community']
+    search_fields = ['name', 'mobile', 'family_code']
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -26,16 +26,18 @@ class FamilyViewSet(viewsets.ModelViewSet):
             
         if user.role == 'super_admin':
             return queryset
-        elif user.role == 'state_admin':
-            return queryset.filter(state=user.location)
-        elif user.role == 'district_admin':
-            return queryset.filter(district=user.location)
-        elif user.role == 'vidhansabha_admin':
-            return queryset.filter(vidhansabha=user.location)
-        elif user.role == 'ward_volunteer':
-            return queryset.filter(ward=user.location)
             
-        return queryset
+        if not user.location:
+            return queryset.none()
+            
+        location_type = user.location.type
+        valid_family_fields = ['state', 'sambhag', 'loksabha', 'district', 'vidhansabha', 'ward']
+        
+        if location_type in valid_family_fields:
+            filter_kwargs = {location_type: user.location}
+            return queryset.filter(**filter_kwargs)
+            
+        return queryset.none()
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

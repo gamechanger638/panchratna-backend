@@ -7,8 +7,8 @@ from django.db import transaction
 class NestedMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = Member
-        fields = ['id', 'name', 'relation', 'dob', 'education', 'profession', 'marital_status', 'mobile']
-        read_only_fields = ['id']
+        fields = '__all__'
+        read_only_fields = ['id', 'family']
 
 class FamilySerializer(serializers.ModelSerializer):
     members = NestedMemberSerializer(many=True, required=False)
@@ -22,13 +22,8 @@ class FamilySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Family
-        fields = [
-            'id', 'family_code', 'name', 'father_or_husband_name', 'mother_name',
-            'gotra', 'dob', 'age', 'education', 'profession', 'mobile', 'email',
-            'social_role', 'state', 'sambhag', 'loksabha', 'district', 'vidhansabha', 'ward',
-            'permanent_address', 'current_address', 'members', 'members_count', 'community'
-        ]
-        read_only_fields = ['id', 'family_code']
+        fields = '__all__'
+        read_only_fields = ['id', 'family_code', 'created_by']
 
     def get_members_count(self, obj):
         return obj.members.count()
@@ -82,17 +77,27 @@ class FamilySerializer(serializers.ModelSerializer):
 
 class FamilyListSerializer(serializers.ModelSerializer):
     members_count = serializers.SerializerMethodField()
-    state = serializers.StringRelatedField()
-    sambhag = serializers.StringRelatedField()
-    loksabha = serializers.StringRelatedField()
-    district = serializers.StringRelatedField()
-    vidhansabha = serializers.StringRelatedField()
-    ward = serializers.StringRelatedField()
-    community = serializers.StringRelatedField()
+    state_name = serializers.CharField(source='state.name', read_only=True)
+    sambhag_name = serializers.CharField(source='sambhag.name', read_only=True)
+    loksabha_name = serializers.CharField(source='loksabha.name', read_only=True)
+    district_name = serializers.CharField(source='district.name', read_only=True)
+    vidhansabha_name = serializers.CharField(source='vidhansabha.name', read_only=True)
+    ward_name = serializers.CharField(source='ward.name', read_only=True)
+    community_name = serializers.CharField(source='community.name', read_only=True)
 
     class Meta:
         model = Family
-        fields = ['id', 'family_code', 'name', 'mobile', 'state', 'sambhag', 'loksabha', 'district', 'vidhansabha', 'ward', 'members_count', 'community']
+        fields = [
+            'id', 'family_code', 'name', 'mobile', 'gotra',
+            'state', 'state_name', 
+            'sambhag', 'sambhag_name',
+            'loksabha', 'loksabha_name',
+            'district', 'district_name', 
+            'vidhansabha', 'vidhansabha_name',
+            'ward', 'ward_name',
+            'community', 'community_name',
+            'members_count', 'created_at'
+        ]
 
     def get_members_count(self, obj):
         return obj.members.count()

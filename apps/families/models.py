@@ -24,6 +24,7 @@ class Family(models.Model):
     district = models.ForeignKey('locations.Location', on_delete=models.SET_NULL, null=True, related_name='family_districts')
     vidhansabha = models.ForeignKey('locations.Location', on_delete=models.SET_NULL, null=True, related_name='family_vidhansabhas')
     ward = models.ForeignKey('locations.Location', on_delete=models.SET_NULL, null=True, related_name='family_wards')
+    pincode = models.CharField(max_length=10, blank=True, null=True)
     
     permanent_address = models.TextField(blank=True, null=True)
     current_address = models.TextField(blank=True, null=True)
@@ -32,13 +33,14 @@ class Family(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_deleted = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Families"
         indexes = [
             models.Index(fields=['mobile']),
-            models.Index(fields=['name']),
             models.Index(fields=['is_deleted']),
+            models.Index(fields=['is_active']),
         ]
 
     def __str__(self):

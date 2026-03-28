@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'apps.families',
     'apps.members',
     'apps.matrimonial',
+    'apps.payments',
 ]
 
 MIDDLEWARE = [
@@ -122,3 +123,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+# Razorpay Settings
+RAZORPAY_KEY_ID = os.environ.get('RAZORPAY_KEY_ID', 'rzp_test_SWWJdaDbo3z2ZT') # Placeholder, use your real key
+RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', 'MPs6rzq5y301jZpdeoePD74c') # Placeholder, use your real secret
